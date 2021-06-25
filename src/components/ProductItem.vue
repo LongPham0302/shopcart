@@ -3,90 +3,63 @@
     <div class="media product">
       <div class="media-left">
         <a href="#">
-          <img
-            class="media-object"
-            src="/dist/images/aplusautomation.jpg"
-            alt="charmander"
-          />
+          <img class="media-object" :src="urlImage" alt="charmander" />
         </a>
       </div>
       <div class="media-body">
-        <h4 class="media-heading">aplusautomation</h4>
+        <h4 class="media-heading">{{ product.name }}</h4>
         <p>
-          Lorem ipsum dolor sit amet, consectetur adipisicing elit. At dicta
-          asperiores veniam repellat unde debitis quisquam magnam magni ut
-          deleniti!
+          {{ product.summary }}
         </p>
-        <input name="quantity-product-1" type="number" value="1" min="1" />
-        <a data-product="1" href="#" class="price"> 12 USD </a>
-      </div>
-    </div>
-    <div class="media product">
-      <div class="media-left">
-        <a href="#">
-          <img
-            class="media-object"
-            src="/dist/images/aplus-media.jpg"
-            alt="charmander"
-          />
-        </a>
-      </div>
-      <div class="media-body">
-        <h4 class="media-heading">aplus media</h4>
-        <p>
-          Lorem ipsum dolor sit amet, consectetur adipisicing elit. At dicta
-          asperiores veniam repellat unde debitis quisquam magnam magni ut
-          deleniti!
-        </p>
-        <span class="price"> 12 USD</span>
-      </div>
-    </div>
-    <div class="media product">
-      <div class="media-left">
-        <a href="#">
-          <img
-            class="media-object"
-            src="/dist/images/robo_fig_combo.jpg"
-            alt="charmander"
-          />
-        </a>
-      </div>
-      <div class="media-body">
-        <h4 class="media-heading">robo fig combo</h4>
-        <p>
-          Lorem ipsum dolor sit amet, consectetur adipisicing elit. At dicta
-          asperiores veniam repellat unde debitis quisquam magnam magni ut
-          deleniti!
-        </p>
-        <input name="quantity-product-1" type="number" value="1" min="1" />
-        <a data-product="1" href="#" class="price"> 12 USD </a>
-      </div>
-    </div>
-    <div class="media product">
-      <div class="media-left">
-        <a href="#">
-          <img
-            class="media-object"
-            src="/dist/images/target-leap-frog.jpg"
-            alt="target-leap-frog"
-          />
-        </a>
-      </div>
-      <div class="media-body">
-        <h4 class="media-heading">target leap frog</h4>
-        <p>
-          Lorem ipsum dolor sit amet, consectetur adipisicing elit. At dicta
-          asperiores veniam repellat unde debitis quisquam magnam magni ut
-          deleniti!
-        </p>
-        <input name="quantity-product-1" type="number" value="1" min="1" />
-        <a data-product="1" href="#" class="price"> 12 USD </a>
+        <template v-if="product.canBuy">
+          <input v-model="quantity" type="number" value="1" min="1" />
+          <a @click.prevent="handelBuyProduct" href="#" class="price">
+            {{ formatPrice }}
+          </a>
+        </template>
+        <span v-else class="price">
+          {{ product.price }}
+        </span>
       </div>
     </div>
   </div>
 </template>
 <script>
+import { toCurrency, validateQuantity } from "./help";
+import { NOTI_GREATER_THAN_ONE } from "../constants/config";
+import { mapActions, mapState } from "vuex";
 export default {
-  name: "product-item"
+  name: "product-item",
+  props: {
+    product: { type: Object, default: {} }
+  },
+  data() {
+    return {
+      quantity: 1
+    };
+  },
+  computed: {
+    urlImage() {
+      return "/dist/images/" + this.product.image;
+    },
+    formatPrice() {
+      return toCurrency(this.product.price, "USD", "right");
+    }
+  },
+  methods: {
+    ...mapActions({ actBuyProduct: "cart/actBuyProduct" }),
+    handelBuyProduct() {
+      const check = validateQuantity(this.quantity);
+      if (check) {
+        let data = {
+          quantity: parseInt(this.quantity),
+          product: this.product
+        };
+        this.actBuyProduct(data);
+      } else {
+        this.$notify(NOTI_GREATER_THAN_ONE);
+      }
+    }
+  }
 };
 </script>

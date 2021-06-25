@@ -16,6 +16,7 @@
         <!-- CART : END -->
       </div>
     </div>
+    <notifications group="foo" position="bottom right" />
   </div>
 </template>
 
@@ -32,9 +33,14 @@ export default {
   },
   data() {
     return {};
-  }
+  },
+
 };
 </script>
 
 <style>
+  .notifications {
+    padding-right: 10x;
+    padding-bottom: 10px;
+  }
 </style>

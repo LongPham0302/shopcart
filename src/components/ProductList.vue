@@ -6,18 +6,27 @@
       </div>
       <div class="panel-body" id="list-product">
         <!-- PRODUCT : START -->
-        <product-item></product-item>
+        <product-item v-for="item in products" :key="item.id" :product="item" />
         <!-- PRODUCT : END -->
       </div>
     </div>
+    
   </div>
+  
 </template>
 <script>
 import ProductItem from "./ProductItem.vue";
+import { mapState } from "vuex";
 export default {
   name: "product-list",
   components: {
     ProductItem
-  }
+  },
+  computed: {
+    ...mapState({
+      products: state => state.product.productList
+    })
+  },
+  methods: {}
 };
 </script>
